@@ -4,6 +4,7 @@ export const StudyContext = createContext();
 
 export const StudyProvider = ({ children }) => {
   const [subjects, setSubjects] = useState([]);
+  const [topics, setTopics] = useState([]);
 
   const addSubject = (name) => {
     setSubjects([...subjects, { id: Date.now(), name }]);
@@ -14,7 +15,7 @@ export const StudyProvider = ({ children }) => {
   };
 
   return (
-    <StudyContext.Provider value={{ subjects, addSubject, deleteSubject }}>
+    <StudyContext.Provider value={{ subjects, addSubject, deleteSubject, topics }}>
       {children}
     </StudyContext.Provider>
   );
