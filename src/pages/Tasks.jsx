@@ -5,7 +5,12 @@ function Tasks() {
   const [title, setTitle] = useState('');
   const [subjectId, setSubjectId] = useState('');
   const [topicId, setTopicId] = useState('');
+  
+  // Filter and Sort states
   const [filter, setFilter] = useState('All');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [subjectFilter, setSubjectFilter] = useState('All');
+  const [sortOrder, setSortOrder] = useState('A-Z');
   
   const { subjects, topics, addTask, tasks, toggleTaskStatus } = useContext(StudyContext);
 
@@ -45,17 +50,44 @@ function Tasks() {
         <button type="submit">Add Task</button>
       </form>
 
-      <select value={filter} onChange={(e) => setFilter(e.target.value)}>
-        <option value="All">All</option>
-        <option value="Pending">pending</option>
-        <option value="Completed">completed</option>
-      </select>
+      <div style={{ marginTop: '20px', marginBottom: '20px' }}>
+        <input 
+          type="text" 
+          placeholder="Search by title..." 
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
+
+        <select value={filter} onChange={(e) => setFilter(e.target.value)}>
+          <option value="All">All Statuses</option>
+          <option value="Pending">Pending</option>
+          <option value="Completed">Completed</option>
+        </select>
+
+        <select value={subjectFilter} onChange={(e) => setSubjectFilter(e.target.value)}>
+          <option value="All">All Subjects</option>
+          {subjects.map(subject => (
+            <option key={subject.id} value={subject.id}>{subject.name}</option>
+          ))}
+        </select>
+
+        <select value={sortOrder} onChange={(e) => setSortOrder(e.target.value)}>
+          <option value="A-Z">Title (A-Z)</option>
+          <option value="Z-A">Title (Z-A)</option>
+        </select>
+      </div>
 
       <ul>
         {tasks
           .filter(task => {
-            if (filter === 'All') return true;
-            return task.status.toLowerCase() === filter.toLowerCase();
+            if (filter !== 'All' && task.status.toLowerCase() !== filter.toLowerCase()) return false;
+            if (subjectFilter !== 'All' && String(task.subjectId) !== String(subjectFilter)) return false;
+            if (searchQuery && !task.title.toLowerCase().includes(searchQuery.toLowerCase())) return false;
+            return true;
+          })
+          .sort((a, b) => {
+            if (sortOrder === 'A-Z') return a.title.localeCompare(b.title);
+            return b.title.localeCompare(a.title);
           })
           .map(task => {
             const subject = subjects.find(s => String(s.id) === String(task.subjectId));
