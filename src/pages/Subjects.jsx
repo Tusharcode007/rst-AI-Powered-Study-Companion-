@@ -3,7 +3,7 @@ import { StudyContext } from '../context/StudyContext';
 
 function Subjects() {
   const [name, setName] = useState('');
-  const { subjects, addSubject } = useContext(StudyContext);
+  const { subjects, addSubject, deleteSubject } = useContext(StudyContext);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -24,7 +24,10 @@ function Subjects() {
       </form>
       <ul>
         {subjects.map((subject) => (
-          <li key={subject.id}>{subject.name}</li>
+          <li key={subject.id}>
+            {subject.name}
+            <button onClick={() => deleteSubject(subject.id)}>Delete</button>
+          </li>
         ))}
       </ul>
     </div>

@@ -9,8 +9,12 @@ export const StudyProvider = ({ children }) => {
     setSubjects([...subjects, { id: Date.now(), name }]);
   };
 
+  const deleteSubject = (id) => {
+    setSubjects(subjects.filter(subject => subject.id !== id));
+  };
+
   return (
-    <StudyContext.Provider value={{ subjects, addSubject }}>
+    <StudyContext.Provider value={{ subjects, addSubject, deleteSubject }}>
       {children}
     </StudyContext.Provider>
   );
