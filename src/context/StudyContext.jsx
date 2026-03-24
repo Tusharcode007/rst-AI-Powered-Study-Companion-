@@ -14,8 +14,12 @@ export const StudyProvider = ({ children }) => {
     setSubjects(subjects.filter(subject => subject.id !== id));
   };
 
+  const addTopic = (name, subjectId) => {
+    setTopics([...topics, { id: Date.now(), name, subjectId }]);
+  };
+
   return (
-    <StudyContext.Provider value={{ subjects, addSubject, deleteSubject, topics }}>
+    <StudyContext.Provider value={{ subjects, addSubject, deleteSubject, topics, addTopic }}>
       {children}
     </StudyContext.Provider>
   );
