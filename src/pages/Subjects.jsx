@@ -5,7 +5,7 @@ function Subjects() {
   const [name, setName] = useState('');
   const [topicName, setTopicName] = useState('');
   const [topicSubjectId, setTopicSubjectId] = useState('');
-  const { subjects, addSubject, deleteSubject, addTopic, topics } = useContext(StudyContext);
+  const { subjects, addSubject, deleteSubject, addTopic, updateTopic, topics } = useContext(StudyContext);
 
   const handleSubjectSubmit = (e) => {
     e.preventDefault();
@@ -66,7 +66,35 @@ function Subjects() {
               {topics
                 .filter(topic => String(topic.subjectId) === String(subject.id))
                 .map(topic => (
-                  <li key={topic.id}>&#x2022; {topic.name}</li>
+                  <li key={topic.id} style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', paddingBottom: '1rem' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <strong style={{ color: 'var(--text)' }}>&#x2022; {topic.name}</strong>
+                      <select 
+                        value={topic.status || 'not-started'} 
+                        onChange={(e) => updateTopic(topic.id, { status: e.target.value })}
+                        style={{ padding: '0.25rem', fontSize: '0.8rem', minWidth: '120px' }}
+                      >
+                        <option value="not-started">Not Started</option>
+                        <option value="in-progress">In Progress</option>
+                        <option value="completed">Completed</option>
+                      </select>
+                    </div>
+                    <textarea 
+                      placeholder="Topic notes..."
+                      value={topic.notes || ''}
+                      onChange={(e) => updateTopic(topic.id, { notes: e.target.value })}
+                      style={{ 
+                        padding: '0.5rem', 
+                        borderRadius: 'var(--radius)', 
+                        border: '1px solid var(--border)', 
+                        width: '100%', 
+                        minHeight: '60px', 
+                        fontFamily: 'inherit',
+                        fontSize: '0.9rem',
+                        resize: 'vertical'
+                      }}
+                    />
+                  </li>
                 ))}
             </ul>
           </div>

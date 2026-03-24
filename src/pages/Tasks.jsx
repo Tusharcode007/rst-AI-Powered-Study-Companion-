@@ -68,6 +68,27 @@ function Tasks() {
 
       <div className="card" style={{ marginBottom: '2rem' }}>
         <h3>Filter & Sort</h3>
+        
+        {/* Tab Buttons */}
+        <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
+          {['All', 'Pending', 'Completed', 'Overdue'].map(tab => (
+            <button 
+              key={tab}
+              type="button"
+              onClick={() => setFilter(tab)}
+              style={{
+                backgroundColor: filter === tab ? 'var(--primary)' : 'var(--surface)',
+                color: filter === tab ? 'white' : 'var(--text)',
+                border: '1px solid var(--border)',
+                flex: 1,
+                minWidth: '100px'
+              }}
+            >
+              {tab}
+            </button>
+          ))}
+        </div>
+
         <form style={{ margin: 0 }}>
           <input 
             type="text" 
@@ -75,11 +96,6 @@ function Tasks() {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
-          <select value={filter} onChange={(e) => setFilter(e.target.value)}>
-            <option value="All">All Statuses</option>
-            <option value="Pending">Pending</option>
-            <option value="Completed">Completed</option>
-          </select>
           <select value={subjectFilter} onChange={(e) => setSubjectFilter(e.target.value)}>
             <option value="All">All Subjects</option>
             {subjects.map(subject => (
@@ -89,6 +105,10 @@ function Tasks() {
           <select value={sortOrder} onChange={(e) => setSortOrder(e.target.value)}>
             <option value="A-Z">Title (A-Z)</option>
             <option value="Z-A">Title (Z-A)</option>
+            <option value="Deadline (Earliest)">Deadline (Earliest)</option>
+            <option value="Deadline (Latest)">Deadline (Latest)</option>
+            <option value="Priority (High-Low)">Priority (High-Low)</option>
+            <option value="Priority (Low-High)">Priority (Low-High)</option>
           </select>
         </form>
       </div>
@@ -96,14 +116,43 @@ function Tasks() {
       <div className="list-container">
         {tasks
           .filter(task => {
-            if (filter !== 'All' && task.status.toLowerCase() !== filter.toLowerCase()) return false;
+            // Tab Status Logic
+            if (filter === 'Pending' && task.status !== 'pending') return false;
+            if (filter === 'Completed' && task.status !== 'completed') return false;
+            if (filter === 'Overdue') {
+              if (task.status === 'completed') return false;
+              if (!task.deadline) return false;
+              const today = new Date().toLocaleDateString('en-CA');
+              if (task.deadline >= today) return false;
+            }
+            
+            // Other Filters
             if (subjectFilter !== 'All' && String(task.subjectId) !== String(subjectFilter)) return false;
             if (searchQuery && !task.title.toLowerCase().includes(searchQuery.toLowerCase())) return false;
             return true;
           })
           .sort((a, b) => {
             if (sortOrder === 'A-Z') return a.title.localeCompare(b.title);
-            return b.title.localeCompare(a.title);
+            if (sortOrder === 'Z-A') return b.title.localeCompare(a.title);
+            if (sortOrder === 'Deadline (Earliest)') {
+              if (!a.deadline) return 1;
+              if (!b.deadline) return -1;
+              return a.deadline.localeCompare(b.deadline);
+            }
+            if (sortOrder === 'Deadline (Latest)') {
+              if (!a.deadline) return 1;
+              if (!b.deadline) return -1;
+              return b.deadline.localeCompare(a.deadline);
+            }
+            if (sortOrder === 'Priority (High-Low)') {
+              const weight = { high: 3, medium: 2, low: 1 };
+              return (weight[b.priority] || 2) - (weight[a.priority] || 2);
+            }
+            if (sortOrder === 'Priority (Low-High)') {
+              const weight = { high: 3, medium: 2, low: 1 };
+              return (weight[a.priority] || 2) - (weight[b.priority] || 2);
+            }
+            return 0;
           })
           .map(task => {
             const subject = subjects.find(s => String(s.id) === String(task.subjectId));
