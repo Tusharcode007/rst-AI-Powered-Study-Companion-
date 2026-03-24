@@ -20,11 +20,17 @@ export const StudyProvider = ({ children }) => {
   };
 
   const addTask = (title, subjectId, topicId) => {
-    setTasks([...tasks, { id: Date.now(), title, subjectId, topicId }]);
+    setTasks([...tasks, { id: Date.now(), title, subjectId, topicId, status: 'pending' }]);
+  };
+
+  const toggleTaskStatus = (id) => {
+    setTasks(tasks.map(task =>
+      task.id === id ? { ...task, status: task.status === 'pending' ? 'completed' : 'pending' } : task
+    ));
   };
 
   return (
-    <StudyContext.Provider value={{ subjects, addSubject, deleteSubject, topics, addTopic, tasks, addTask }}>
+    <StudyContext.Provider value={{ subjects, addSubject, deleteSubject, topics, addTopic, tasks, addTask, toggleTaskStatus }}>
       {children}
     </StudyContext.Provider>
   );
