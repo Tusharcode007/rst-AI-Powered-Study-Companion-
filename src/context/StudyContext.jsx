@@ -5,6 +5,7 @@ export const StudyContext = createContext();
 export const StudyProvider = ({ children }) => {
   const [subjects, setSubjects] = useState([]);
   const [topics, setTopics] = useState([]);
+  const [tasks, setTasks] = useState([]);
 
   const addSubject = (name) => {
     setSubjects([...subjects, { id: Date.now(), name }]);
@@ -18,8 +19,12 @@ export const StudyProvider = ({ children }) => {
     setTopics([...topics, { id: Date.now(), name, subjectId }]);
   };
 
+  const addTask = (title, subjectId, topicId) => {
+    setTasks([...tasks, { id: Date.now(), title, subjectId, topicId }]);
+  };
+
   return (
-    <StudyContext.Provider value={{ subjects, addSubject, deleteSubject, topics, addTopic }}>
+    <StudyContext.Provider value={{ subjects, addSubject, deleteSubject, topics, addTopic, tasks, addTask }}>
       {children}
     </StudyContext.Provider>
   );
