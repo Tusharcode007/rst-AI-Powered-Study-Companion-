@@ -3,24 +3,33 @@ import { StudyContext } from '../context/StudyContext';
 
 function Subjects() {
   const [name, setName] = useState('');
-  const { subjects, addSubject, deleteSubject } = useContext(StudyContext);
+  const [topicName, setTopicName] = useState('');
+  const [topicSubjectId, setTopicSubjectId] = useState('');
+  const { subjects, addSubject, deleteSubject, addTopic } = useContext(StudyContext);
 
-  const handleSubmit = (e) => {
+  const handleSubjectSubmit = (e) => {
     e.preventDefault();
     addSubject(name);
     setName('');
   };
 
+  const handleTopicSubmit = (e) => {
+    e.preventDefault();
+    addTopic(topicName, topicSubjectId);
+    setTopicName('');
+    setTopicSubjectId('');
+  };
+
   return (
     <div>
       Subjects Page
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubjectSubmit}>
         <input 
           type="text" 
           value={name} 
           onChange={(e) => setName(e.target.value)} 
         />
-        <button type="submit">Add</button>
+        <button type="submit">Add Subject</button>
       </form>
       <ul>
         {subjects.map((subject) => (
@@ -30,6 +39,21 @@ function Subjects() {
           </li>
         ))}
       </ul>
+
+      <form onSubmit={handleTopicSubmit}>
+        <input 
+          type="text" 
+          value={topicName} 
+          onChange={(e) => setTopicName(e.target.value)} 
+        />
+        <select value={topicSubjectId} onChange={(e) => setTopicSubjectId(e.target.value)}>
+          <option value="">Select subject</option>
+          {subjects.map(subject => (
+            <option key={subject.id} value={subject.id}>{subject.name}</option>
+          ))}
+        </select>
+        <button type="submit">Add Topic</button>
+      </form>
     </div>
   );
 }
