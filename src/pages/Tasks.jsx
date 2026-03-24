@@ -5,6 +5,8 @@ function Tasks() {
   const [title, setTitle] = useState('');
   const [subjectId, setSubjectId] = useState('');
   const [topicId, setTopicId] = useState('');
+  const [deadline, setDeadline] = useState('');
+  const [priority, setPriority] = useState('medium');
   
   const [filter, setFilter] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
@@ -15,7 +17,14 @@ function Tasks() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if(title) { addTask(title, subjectId, topicId); setTitle(''); setSubjectId(''); setTopicId(''); }
+    if(title) { 
+      addTask(title, subjectId, topicId, deadline, priority); 
+      setTitle(''); 
+      setSubjectId(''); 
+      setTopicId(''); 
+      setDeadline('');
+      setPriority('medium');
+    }
   };
 
   return (
@@ -42,6 +51,16 @@ function Tasks() {
             {topics.map(topic => (
               <option key={topic.id} value={topic.id}>{topic.name}</option>
             ))}
+          </select>
+          <input 
+            type="date"
+            value={deadline}
+            onChange={(e) => setDeadline(e.target.value)}
+          />
+          <select value={priority} onChange={(e) => setPriority(e.target.value)}>
+            <option value="low">Low Priority</option>
+            <option value="medium">Medium Priority</option>
+            <option value="high">High Priority</option>
           </select>
           <button type="submit">Add Task</button>
         </form>
@@ -107,6 +126,9 @@ function Tasks() {
                   </span>
                   <p style={{ marginTop: '0.25rem', marginBottom: 0, fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
                     {subject ? subject.name : 'Unknown Subject'} &bull; {topic ? topic.name : 'Unknown Topic'}
+                  </p>
+                  <p style={{ marginTop: '0.25rem', marginBottom: 0, fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                    <strong>Due:</strong> {task.deadline || 'No deadline'} &bull; <strong>Priority:</strong> {task.priority || 'medium'}
                   </p>
                 </div>
                 <button 
