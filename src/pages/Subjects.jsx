@@ -5,7 +5,7 @@ function Subjects() {
   const [name, setName] = useState('');
   const [topicName, setTopicName] = useState('');
   const [topicSubjectId, setTopicSubjectId] = useState('');
-  const { subjects, addSubject, deleteSubject, addTopic } = useContext(StudyContext);
+  const { subjects, topics, addSubject, deleteSubject, addTopic } = useContext(StudyContext);
 
   const handleSubjectSubmit = (e) => {
     e.preventDefault();
@@ -36,6 +36,13 @@ function Subjects() {
           <li key={subject.id}>
             {subject.name}
             <button onClick={() => deleteSubject(subject.id)}>Delete</button>
+            <ul>
+              {topics
+                .filter(topic => String(topic.subjectId) === String(subject.id))
+                .map(topic => (
+                  <li key={topic.id}>{topic.name}</li>
+                ))}
+            </ul>
           </li>
         ))}
       </ul>
