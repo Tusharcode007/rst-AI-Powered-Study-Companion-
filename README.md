@@ -40,3 +40,12 @@ A modern, highly responsive React application designed to natively map your enti
    npm run dev
    ```
 4. **Access the application locally at:** `http://localhost:5173/`
+
+## 🌐 Deployment (GitHub Pages)
+
+To launch or update the live production build of this app on GitHub Pages:
+1. Run the automatic deployment script: `npm run deploy`
+2. Navigate to your GitHub Repository online.
+3. Click the gear icon (**Settings**) and navigate to the **Pages** tab on the left.
+4. Under **Build and deployment > Branch**, change the dropdown from `main` to **`gh-pages`**. *(If your site is showing a blank white screen, it's because it's reading the raw source code from `main` rather than the compiled build inside `gh-pages`)*.
+5. Click **Save**, wait ~60 seconds, and your application will securely go live!

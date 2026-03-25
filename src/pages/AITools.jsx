@@ -1,6 +1,8 @@
 import React, { useState, useContext } from 'react';
 import { aiService } from '../services/aiService';
 import { StudyContext } from '../context/StudyContext';
+import { motion, AnimatePresence } from 'framer-motion';
+import { BrainCircuit, BookOpen, Layers } from 'lucide-react';
 
 function AITools() {
   const { subjects } = useContext(StudyContext);
@@ -116,11 +118,15 @@ function AITools() {
   };
 
   return (
-    <div>
-      <h2 style={{ marginBottom: '2rem' }}>AI Multi-Mode Assistant</h2>
+    <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
+      <h2 style={{ marginBottom: '2rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+        <BrainCircuit size={32} color="var(--primary)" /> AI Multi-Mode Assistant
+      </h2>
       
       <div className="card" style={{ marginBottom: '2rem' }}>
-        <h3 style={{ marginBottom: '1.5rem' }}>Configure Generation</h3>
+        <h3 style={{ marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <Layers size={20} color="var(--primary)" /> Configure Generation Node
+        </h3>
         
         {/* Step 5: Input Enhancement */}
         <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', marginBottom: '1.5rem' }}>
@@ -171,26 +177,27 @@ function AITools() {
         {error && <p style={{ color: 'var(--danger)', marginTop: '1rem', fontWeight: '500', textAlign: 'center' }}>{error}</p>}
       </div>
 
-      {/* Step 4: Loading State */}
-      {loading && (
-        <div className="card" style={{ textAlign: 'center', padding: '3rem', color: 'var(--text-secondary)' }}>
-          <h3>Analyzing structure...</h3>
-          <p>Generating contextual {activeMode} for your coursework.</p>
-        </div>
-      )}
+      <AnimatePresence>
+        {loading && (
+          <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} className="card" style={{ textAlign: 'center', padding: '3rem', color: 'var(--text-secondary)' }}>
+            <h3 style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}><BrainCircuit size={24} className="spin" /> Analyzing structure...</h3>
+            <p>Generating contextual {activeMode} architecture for your coursework.</p>
+          </motion.div>
+        )}
 
-      {/* Structured UI Rendering */}
-      {response && !loading && (
-        <div className="card" style={{ animation: 'fadeIn 0.3s ease-in-out' }}>
-          <h3 style={{ color: 'var(--primary)', marginBottom: '1.5rem', textTransform: 'capitalize' }}>
-            {response.type} Results
-          </h3>
-          <div style={{ lineHeight: '1.6' }}>
-            {renderResponse()}
-          </div>
-        </div>
-      )}
-    </div>
+        {/* Structured UI Rendering */}
+        {response && !loading && (
+          <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="card">
+            <h3 style={{ color: '#fff', marginBottom: '1.5rem', textTransform: 'capitalize', paddingBottom: '1rem', borderBottom: '1px dashed var(--border)', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+              <BookOpen size={20} color="var(--primary)" /> Evaluated {response.type} Results
+            </h3>
+            <div style={{ lineHeight: '1.6' }}>
+              {renderResponse()}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.div>
   );
 }
 

@@ -1,5 +1,6 @@
 import React, { useContext } from 'react';
 import { StudyContext } from '../context/StudyContext';
+import { motion } from 'framer-motion';
 
 function Revision() {
   const { revisions, tasks, subjects, topics } = useContext(StudyContext);
@@ -27,17 +28,18 @@ function Revision() {
           if (!details) return null;
           
           return (
-            <div key={rev.id} className="card list-item">
+            <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} layout key={rev.id} className="card list-item">
               <div>
-                <strong style={{ fontSize: '1.05rem' }}>{details.task.title}</strong>
+                <strong style={{ fontSize: '1.05rem', color: '#fff' }}>{details.task.title}</strong>
                 <span style={{ 
                   marginLeft: '10px', 
-                  padding: '2px 8px', 
+                  padding: '4px 10px', 
                   borderRadius: '12px', 
                   fontSize: '0.75rem',
-                  backgroundColor: 'var(--border)',
-                  color: 'var(--text-primary)',
-                  fontWeight: 'bold'
+                  backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                  color: '#60a5fa',
+                  fontWeight: 'bold',
+                  border: '1px solid rgba(59, 130, 246, 0.2)'
                 }}>
                   Scheduled: {rev.date}
                 </span>
@@ -45,7 +47,7 @@ function Revision() {
                   {details.subject ? details.subject.name : 'Unknown Subject'} &bull; {details.topic ? details.topic.name : 'Unknown Topic'}
                 </p>
               </div>
-            </div>
+            </motion.div>
           );
         })}
       </div>
@@ -53,19 +55,19 @@ function Revision() {
   }
 
   return (
-    <div>
+    <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
       <h2 style={{ marginBottom: '2rem' }}>Revision Planner</h2>
       
       <div className="card" style={{ marginBottom: '2rem' }}>
-        <h3 style={{ color: 'var(--danger)' }}>Overdue Revisions</h3>
+        <h3 style={{ color: 'var(--danger-hover)' }}>Overdue Revisions</h3>
         {renderRevisionList(overdueRevisions)}
       </div>
 
       <div className="card">
-        <h3 style={{ color: 'var(--primary)' }}>Upcoming Revisions</h3>
+        <h3 style={{ color: 'var(--primary-hover)' }}>Upcoming Revisions</h3>
         {renderRevisionList(upcomingRevisions)}
       </div>
-    </div>
+    </motion.div>
   );
 }
 

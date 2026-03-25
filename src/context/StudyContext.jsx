@@ -26,7 +26,9 @@ export const StudyProvider = ({ children }) => {
   useEffect(() => { localStorage.setItem('revisions', JSON.stringify(revisions)); }, [revisions]);
 
   const addSubject = (name) => {
-    setSubjects([...subjects, { id: Date.now(), name }]);
+    const newId = Date.now().toString();
+    setSubjects([...subjects, { id: newId, name }]);
+    return newId;
   };
 
   const deleteSubject = (id) => {
@@ -34,7 +36,9 @@ export const StudyProvider = ({ children }) => {
   };
 
   const addTopic = (name, subjectId) => {
-    setTopics([...topics, { id: Date.now(), name, subjectId, status: 'not-started', notes: '' }]);
+    const newId = Date.now().toString();
+    setTopics([...topics, { id: newId, name, subjectId, status: 'not-started', notes: '' }]);
+    return newId;
   };
 
   const updateTopic = (id, updates) => {
