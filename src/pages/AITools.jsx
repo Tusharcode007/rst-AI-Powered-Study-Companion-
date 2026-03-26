@@ -2,7 +2,7 @@ import React, { useState, useContext } from 'react';
 import { aiService } from '../services/aiService';
 import { StudyContext } from '../context/StudyContext';
 import { motion, AnimatePresence } from 'framer-motion';
-import { BrainCircuit, BookOpen, Layers } from 'lucide-react';
+import { BrainCircuit, BookOpen, Layers, Key } from 'lucide-react';
 
 function AITools() {
   const { subjects } = useContext(StudyContext);
@@ -14,15 +14,29 @@ function AITools() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
+  const [apiKey, setApiKey] = useState(() => localStorage.getItem('geminiApiKey') || '');
+  const [showKeyField, setShowKeyField] = useState(!apiKey);
+
+  const saveKey = () => {
+    if (apiKey.trim()) {
+      localStorage.setItem('geminiApiKey', apiKey.trim());
+      setShowKeyField(false);
+    }
+  };
+
   const handleGenerate = async () => {
     if (!topic.trim()) {
       setError('Please enter a valid study topic first.');
       return;
     }
 
+    if (!apiKey.trim()) {
+      setError('A valid Gemini API key must be configured above to activate live generation.');
+      return;
+    }
+
     setLoading(true);
     setError('');
-    // Clear previous result
     setResponse(null);
 
     const subjectName = subjectId ? subjects.find(s => String(s.id) === String(subjectId))?.name : '';
@@ -38,7 +52,7 @@ function AITools() {
       }
       setResponse(res);
     } catch (err) {
-      setError(err || 'Failed to generate AI response. Please try again later.');
+      setError(err.message || err || 'Failed to generate AI response natively. Validate your API status.');
     } finally {
       setLoading(false);
     }
@@ -123,12 +137,45 @@ function AITools() {
         <BrainCircuit size={32} color="var(--primary)" /> AI Multi-Mode Assistant
       </h2>
       
-      <div className="card" style={{ marginBottom: '2rem' }}>
+      <AnimatePresence>
+        {(showKeyField || !apiKey) && (
+          <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="card" style={{ marginBottom: '2rem', border: '1px solid var(--primary)', overflow: 'hidden' }}>
+            <h3 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--primary)' }}>
+              <Key size={20} /> Secure API Configuration Node
+            </h3>
+            <p style={{ marginBottom: '1rem', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
+              To deploy live AI generation natively on your device, please provide a free Google Gemini API Key. Your key is stored strictly locally inside your browser's private storage and is never transmitted to any external servers.
+            </p>
+            <div style={{ display: 'flex', gap: '1rem' }}>
+              <input 
+                type="password" 
+                placeholder="Paste Gemini API Key (AIzaSy...)" 
+                value={apiKey}
+                onChange={(e) => setApiKey(e.target.value)}
+                style={{ flex: 1 }}
+              />
+              <button onClick={saveKey}>Save Locally</button>
+            </div>
+            <p style={{ marginTop: '0.75rem', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
+              Get a free key instantly from <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noreferrer" style={{ color: 'var(--primary)' }}>Google AI Studio</a>.
+            </p>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {!showKeyField && apiKey && (
+        <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '1rem' }}>
+           <button onClick={() => setShowKeyField(true)} style={{ backgroundColor: 'transparent', border: '1px solid var(--border)', color: 'var(--text-secondary)', fontSize: '0.8rem', padding: '0.5rem 1rem' }}>
+             <Key size={14} /> Update API Key
+           </button>
+        </div>
+      )}
+
+      <div className="card" style={{ marginBottom: '2rem', opacity: !apiKey ? 0.4 : 1, pointerEvents: !apiKey ? 'none' : 'auto', transition: 'all 0.3s ease' }}>
         <h3 style={{ marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
           <Layers size={20} color="var(--primary)" /> Configure Generation Node
         </h3>
         
-        {/* Step 5: Input Enhancement */}
         <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', marginBottom: '1.5rem' }}>
           <select value={subjectId} onChange={(e) => setSubjectId(e.target.value)} style={{ flex: 1 }}>
             <option value="">No General Subject</option>
@@ -145,7 +192,6 @@ function AITools() {
           />
         </div>
 
-        {/* Step 1: Modes Tabs */}
         <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
           {['summary', 'questions', 'flashcards'].map(mode => (
             <button 
@@ -167,9 +213,9 @@ function AITools() {
         </div>
         
         <button 
-          disabled={loading} 
+          disabled={loading || !apiKey} 
           onClick={handleGenerate}
-          style={{ width: '100%', padding: '1rem', fontSize: '1.1rem', opacity: loading ? 0.7 : 1 }}
+          style={{ width: '100%', padding: '1rem', fontSize: '1.1rem', opacity: loading || !apiKey ? 0.7 : 1 }}
         >
           {loading ? 'Processing with AI...' : 'Generate Material'}
         </button>
@@ -185,7 +231,6 @@ function AITools() {
           </motion.div>
         )}
 
-        {/* Structured UI Rendering */}
         {response && !loading && (
           <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="card">
             <h3 style={{ color: '#fff', marginBottom: '1.5rem', textTransform: 'capitalize', paddingBottom: '1rem', borderBottom: '1px dashed var(--border)', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>

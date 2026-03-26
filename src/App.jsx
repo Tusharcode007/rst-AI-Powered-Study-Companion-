@@ -51,7 +51,7 @@ function App() {
             }}>
               <BrainCircuit size={22} color="white" />
             </span>
-            StudyBase
+            Study Babe
           </h1>
           
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginTop: '1rem' }}>
